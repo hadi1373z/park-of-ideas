@@ -1,0 +1,1 @@
+const {spawnSync}=require('node:child_process'),path=require('node:path');for(const file of ['tests/standalone.mjs','tests/origami-bird.mjs','tests/origami-creatures.mjs']){const r=spawnSync(process.execPath,[file],{cwd:path.resolve(__dirname,'..'),stdio:'inherit',windowsHide:true});if(r.status!==0)process.exit(r.status||1);}console.log('All standalone checks passed.');

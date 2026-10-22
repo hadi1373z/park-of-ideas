@@ -1,0 +1,12 @@
+{
+  "name": "park-of-ideas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An independent 3D park of mathematical minds, paper creatures and personal ideas.",
+  "scripts": {
+    "check": "node tools/check.cjs",
+    "build": "node tools/build.cjs",
+    "preview": "node tools/preview.cjs"
+  }
+}
