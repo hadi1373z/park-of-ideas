@@ -37,7 +37,7 @@ export function origamiTourPose(tour,distance,time,height,kind,phase=0){
 }
 export function floatingOrigamiPose(time,angle,park){
  const a=angle+time*.045,r=6.6*park.scale;
- return{x:park.x+Math.sin(a)*r,z:park.z+Math.cos(a)*r,y:1.35*park.scale-.006+Math.sin(time*1.1+angle)*.008,yaw:a,roll:Math.sin(time*.8+angle)*.018};
+ return{x:(park.fountain?.x??park.x)+Math.sin(a)*r,z:(park.fountain?.z??park.z)+Math.cos(a)*r,y:1.35*park.scale-.006+Math.sin(time*1.1+angle)*.008,yaw:a,roll:Math.sin(time*.8+angle)*.018};
 }
 export function installOrigamiPark(M,T){
  const group=new T.Group();group.name='Flying paper origami';M.scene.add(group);

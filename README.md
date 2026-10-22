@@ -2,6 +2,13 @@
 
 An independent, browser-based 3D garden of mathematics and creative questions. Extracted from [City of Ideas](https://github.com/hadi1373z/city-of-ideas), with its own renderer, controls, build, tests, and GitHub Pages deployment. It runs without loading the city or connecting to its tools.
 
+## Two park editions
+
+- [Original park](https://hadi1373z.github.io/park-of-ideas/): nine circular gardens around the central fountain.
+- [The Question Garden](https://hadi1373z.github.io/park-of-ideas/question-garden.html): nine open garden rooms, joined gravel promenades, lower sculpture displays, branching trees with layered canopies, new landmark locations and a green-and-brass interface. Its three opening invitations lead to geometry, logic, or a personal question.
+
+The editions share the catalogue, renderer, missions, reading tools and origami models. Their personal idea groves use separate browser storage keys; export/import can transfer ideas between them. The Atlas reading shelf remains shared within the same origin.
+
 ## Explore
 
 - Nine gardens and 118 thinker profiles, with sources and connections.
@@ -29,6 +36,7 @@ Walk with WASD. Arrow keys move forward/back and turn. Drag to look; PageUp/Page
 
 - `src/index.html`, `app.js`, `style.css`: park interface, catalogue, missions, reading routes, grove and backups.
 - `src/scene.js`: standalone Three.js renderer, camera, input, picking and animation loop.
+- `src/question-garden.html`, `question-garden-config.js`, `question-garden.css`: the second edition, with explicit layout and theme settings.
 - `src/navigation.js`: finite-position validation, park boundary and normalized movement.
 - `src/park.js`, `park-data.js`: current park geometry and public catalogue layout.
 - `src/origami-*.js`: paper models, flight routes, water animation and folding lessons.

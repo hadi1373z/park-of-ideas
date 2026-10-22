@@ -7,3 +7,17 @@ for(const [id,p]of park.personPositions){assert.ok(context.PARK_DATA.catalogue.p
 assert.ok(park.addSeed({id:'test-idea',title:'A question',color:'#729b84'}));assert.equal(park.seedPositions.size,1);park.updateSeed({id:'test-idea',title:'A revised question'});assert.equal(park.seedPositions.size,1);park.removeSeed('test-idea');assert.equal(park.seedPositions.size,0);
 assert.equal(boundedPoint(NaN,1),null);assert.ok(Math.abs(Math.hypot(...Object.values(boundedPoint(300,300)))-235)<1e-8);const start={x:0,z:0,yaw:0};const straight=moveVisitor(start,0,1,.06),diagonal=moveVisitor(start,1,1,.06);assert.ok(straight.z<0);assert.ok(Math.abs(Math.hypot(diagonal.x,diagonal.z)-Math.abs(straight.z))<1e-8);assert.deepEqual(moveVisitor(start,0,1,-1),start);
 const app=await readFile(path.join(root,'app.js'),'utf8'),scene=await readFile(path.join(root,'scene.js'),'utf8');assert.ok(!app.includes('initWorldUI'));assert.ok(!scene.includes('postMessage'));assert.ok(!scene.includes('CITY_MAIN'));assert.ok(app.includes('park-of-ideas:grove:v1'));assert.ok(scene.includes('document.hidden'));console.log('PASS: independent local dependencies; 9 gardens / 118 selectable thinkers; fountain and grove lifecycle; bounded normalized navigation; no city parent bridge.');
+
+const atlasPositions=JSON.stringify([...park.districtPositions]);
+vm.runInContext(await readFile(path.join(root,'question-garden-config.js'),'utf8'),context);const second=context.buildIdeaPark(context.THREE);
+assert.equal(second.stats.edition,'question-garden');assert.equal(second.stats.people,118);assert.equal(second.stats.districts,9);assert.notEqual(JSON.stringify([...second.districtPositions]),atlasPositions);
+assert.equal(new Set([...second.districtPositions.values()].map(p=>p.x)).size,3);assert.equal(new Set([...second.districtPositions.values()].map(p=>p.z)).size,3);
+let rooms=0;second.group.traverse(o=>{if(o.name.startsWith('Open garden room:'))rooms++;});assert.equal(rooms,9);
+for(const [id,p]of second.personPositions){const d=second.districtPositions.get(p.districtId);assert.ok(d);assert.ok(Math.abs(p.x-d.x)<35&&Math.abs(p.z-d.z)<35);assert.ok(Math.hypot(p.x,p.z)<235);}
+assert.equal(second.landmarks.get('fountain').z,205);assert.equal(second.landmarks.get('studio').z,-185);assert.equal(second.landmarks.get('grove').x,-180);assert.equal(second.landmarks.get('grove').z,70);
+const planted=second.addSeed({id:'second-test',title:'A new question'});assert.ok(Math.hypot(planted.x+180,planted.z-70)<40);second.removeSeed('second-test');
+const page=await readFile(path.join(root,'question-garden.html'),'utf8');assert.ok(page.includes('question-garden-config.js'));assert.ok(page.includes('href="index.html"'));assert.ok((await readFile(path.join(root,'index.html'),'utf8')).includes('href="question-garden.html"'));assert.equal(context.PARK_EDITION.storageKey,'question-garden:grove:v1');
+console.log('PASS: distinct nine-room spatial edition, retained 118 thinkers, valid room positions, relocated fountain/studio/grove, separate grove storage and reciprocal edition links.');
+
+let canopyCount=0,branchCount=0;second.group.traverse(o=>{if(o.name==='Layered woodland canopies')canopyCount=o.count;if(o.name==='Woodland branches')branchCount=o.count;});assert.ok(second.stats.trees>0);assert.equal(canopyCount,second.stats.trees*7);assert.equal(branchCount,second.stats.trees*3);
+console.log('PASS: second-edition trees use three connected branches and seven layered crown clusters per tree.');

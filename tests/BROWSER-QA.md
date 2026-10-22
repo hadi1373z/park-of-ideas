@@ -13,3 +13,13 @@ Tested on an isolated local HTTP preview of the standalone build.
 - No browser console errors were captured during these checks.
 
 Only synthetic local notes were entered. No user notes were copied or uploaded. These checks do not constitute a full manual accessibility or physical-controller audit.
+
+## The Question Garden — second edition
+
+- Separate opening screen, nine-room layout, and grid map checked visually.
+- Notice a pattern enters the relocated Geometry Garden; walking view keeps the city interface absent.
+- Relocated fountain boats and grove are verified by model tests.
+- Original and second-edition grove storage keys are separate; the Atlas reading shelf is shared.
+
+- On the local preview, a synthetic second-edition question survives reload; following Original park shows its different synthetic test idea instead. Neither is uploaded with the source.
+- Phone-sized view checked at 390 × 844; all three opening invitations and the park controls remain available.

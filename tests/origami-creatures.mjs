@@ -42,3 +42,6 @@ for(const spec of FLOATING_FLOCK)for(const time of[0,20,80,140]){
  for(const x of[bounds.min.x,bounds.max.x])for(const z of[bounds.min.z,bounds.max.z])assert(Math.hypot(x-park.x,z-park.z)<11.1*park.scale,'Floating origami stay inside the basin');bird.dispose();
 }
 console.log('PASS: distributed starting points, smooth park-wide tours, bounded routes and three paper-only floating boats touching the fountain water.');
+
+const relocated={x:0,z:0,scale:1,fountain:{x:0,z:205}};for(const time of[0,12,70])for(const spec of FLOATING_FLOCK){const p=floatingOrigamiPose(time,spec.angle,relocated);assert.ok(Math.hypot(p.x,p.z-205)<11.1);assert.ok(p.z>190);}
+console.log('PASS: floating boats follow the second edition fountain rather than the old park centre.');

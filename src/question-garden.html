@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#e6eadf">
+  <meta name="description" content="Walk through a large garden of mathematical minds. Explore 118 thinkers, follow connections, try a creative mission, and plant an idea of your own.">
+  <title>The Question Garden · Park of Ideas II</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="origami.css"><link rel="stylesheet" href="standalone.css"><link rel="stylesheet" href="question-garden.css">
+
+</head>
+<body class="question-garden">
+  <main id="park" aria-label="Interactive Ideas Park">
+    <canvas id="world" aria-label="3D park. Use WASD or arrow keys to walk, drag to look around, or use the map and garden buttons." tabindex="0"></canvas>
+    <div id="labels" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="topbar">
+      <button class="brand" id="home" aria-label="Return to the park entrance"><span class="brand-icon">✳</span><span>THE QUESTION GARDEN<small>ANOTHER WAY INTO IDEAS · EDITION II</small></span></button>
+      <div class="top-center"><span class="live-dot"></span> OPEN TO POSSIBILITY</div>
+      <nav class="top-actions" aria-label="Park tools"><a class="edition-link" href="index.html">Original park ↗</a><label class="language-label">Language <select id="park-language" aria-label="Language"><option value="en">EN</option><option value="fa">FA</option><option value="de">DE</option></select></label>
+        <button id="search-open" class="icon-btn" aria-label="Find a thinker" title="Find a thinker">⌕</button>
+        <button id="map-open" class="soft-btn" aria-label="Open park map"><span>⌘</span> <span class="button-word">Park map</span></button>
+        <button id="grove-open" class="dark-btn" aria-label="Open my idea grove"><span>＋</span> <span class="button-word">My idea grove</span></button>
+      </nav>
+    </header>
+    <section id="welcome" class="welcome paper">
+      <div class="eyebrow">WALK SLOWLY. LEAVE WITH A QUESTION.</div>
+      <h1>Every answer<br>opens another<br><em>garden.</em></h1>
+      <p>Nine open rooms. A hundred ways to think.<br>Take a walk through patterns, proofs,<br>and possibilities. Keep what changes you.</p>
+      <div class="welcome-stats"><span><strong>9</strong> gardens</span><span><strong id="thinker-count">118</strong> thinkers</span><span><strong>∞</strong> possibilities</span></div>
+      <button id="explore" class="dark-btn wide">Enter the garden <span>↗</span></button>
+      <button id="mission-open" class="text-btn">Or try a 15-minute idea mission →</button>
+      <div class="garden-invitations"><span>CHOOSE YOUR FIRST QUESTION</span><button data-action="travel" data-id="geometry">01 · Notice a pattern <span>↗</span></button><button data-action="travel" data-id="logic">02 · Test a claim <span>↗</span></button><button data-action="new-seed">03 · Keep a question <span>＋</span></button></div>
+    </section>
+    <div id="loading" class="loading"><span class="loader"></span> Opening the garden…</div>
+    <div id="fallback" class="fallback paper" hidden><h2>Your park, in map view.</h2><p>This device could not open the 3D scene. Every garden, thinker, and mission is still available.</p><button class="dark-btn" id="fallback-map">Explore the map →</button></div>
+    <aside id="location" class="location paper" hidden><span class="eyebrow">YOU ARE WANDERING THROUGH</span><strong id="location-name">Curiosity Square</strong><span id="location-note">Click a sculpture to discover an idea.</span></aside>
+    <aside id="trail-guide" class="trail-guide paper" hidden></aside>
+    <div id="nearby" class="nearby paper" hidden></div>
+    <div class="scene-tools paper" aria-label="Scene settings">
+      <button id="view-toggle" aria-label="Switch to walking view" title="Overview / walking">◉</button>
+      <button id="zoom-in" aria-label="Zoom in" title="Zoom in">＋</button>
+      <button id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+      <span></span><button id="time-toggle" aria-label="Switch to evening light" title="Day / evening">☀</button>
+      <button id="sound-toggle" aria-label="Enable ambient sound" title="Ambient sound">♫</button>
+      <button id="help-open" aria-label="Park controls" title="Help">?</button>
+    </div>
+    <div id="joystick" class="joystick" hidden aria-label="Touch joystick"><div class="joystick-ring"></div><div id="joystick-knob"></div><span>WANDER</span></div>
+    <footer class="bottom-bar">
+      <button id="garden-open" class="garden-entry"><span class="mini-flower">✳</span><span>Choose a garden<small>Let a question lead the way</small></span><span>↗</span></button>
+      <div class="bottom-meta"><span id="planted-count">0 ideas planted</span><span class="separator">/</span><button id="paths-open">Reading paths</button><span class="separator">/</span><button id="reader-open">The Atlas reader ↗</button></div>
+      <span class="coordinates" id="coordinates">A PLACE TO BEGIN</span>
+    </footer>
+  </main>
+  <dialog id="detail" aria-labelledby="detail-title"><div class="dialog-top"><span class="eyebrow" id="detail-kicker">PARK OF IDEAS</span><button class="icon-btn close" id="detail-close" aria-label="Close">×</button></div><div id="detail-body"></div></dialog>
+  <dialog id="reader" class="reader-dialog" aria-label="Atlas of Ideas reader"><div class="reader-bar"><span>ATLAS <i>of</i> IDEAS <small> / READING ROOM</small></span><button id="reader-close" class="soft-btn">Back to the park ×</button></div><iframe id="reader-frame" title="Atlas of Ideas original reader" loading="lazy"></iframe></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <input id="backup-input" type="file" accept="application/json,.json" hidden>
+  <script src="./public-fa.js"></script>
+  <script src="./reader-public-fa.js"></script><script src="./public-de.js"></script><script src="./language.js"></script>
+  <div class="visit-actions"></div><script src="assets/three.min.js"></script><script src="config.js"></script><script src="park-data.js"></script><script src="question-garden-config.js"></script><script src="world-public-language.js"></script><script src="park.js"></script><script src="gamepad-input.js"></script><script type="module" src="app.js"></script>
+</body>
+</html>

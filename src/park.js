@@ -1,5 +1,7 @@
 /* Authentic Atlas Ideas Park geometry and content, adapted to the shared city renderer. */
 window.buildIdeaPark=function(THREE){
+ const edition=window.PARK_EDITION,rooms=edition?.id==='question-garden';
+ const groveX=edition?.grove?.x??42,groveZ=edition?.grove?.z??38;
  const scene=new THREE.Group(),rayTargets=new THREE.Group();scene.name='Atlas Ideas Park';scene.add(rayTargets);
  const districts=PARK_DATA.districts,people=PARK_DATA.catalogue.people,mobile=innerWidth<760;let treeCount=0;
   const mats = {
@@ -20,6 +22,7 @@ window.buildIdeaPark=function(THREE){
     waterLight: new THREE.MeshStandardMaterial({ color: '#c5e6df', roughness: .18, transparent: true, opacity: .67 }),
     glass: new THREE.MeshStandardMaterial({ color: '#b9d7cb', roughness: .12, metalness: .1, transparent: true, opacity: .65 }),
   };
+  if(rooms)for(const [id,color]of Object.entries(edition.palette))mats[id]?.color.set(color);
   const geometries = [];
   const textures = [];
   const dynamicMaterials = [];
@@ -83,6 +86,7 @@ window.buildIdeaPark=function(THREE){
     return m;
   }
   function road(a, b, roadWidth = 6) {
+    if(rooms)return null;
     const distance = a.distanceTo(b);
     const m = box((a.x + b.x) / 2, .06, (a.z + b.z) / 2, roadWidth, .12, distance, mats.path, scene, false);
     m.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
@@ -156,9 +160,16 @@ window.buildIdeaPark=function(THREE){
 
   // A 480 metre park, with broad promenades and nine quiet circular gardens.
   const terrain = cylinder(0, -.75, 0, 240, 1.5, mats.grass, scene, false);
+  terrain.name=rooms?'One continuous garden landscape':'Park terrain';
+  if(rooms){
+    // Non-overlapping rectangles make joined gravel promenades with no raised tile pieces.
+    const edges=[-218,-68,-58,58,68,218];
+    for(let ix=0;ix<5;ix++)for(let iz=0;iz<5;iz++)if(ix===1||ix===3||iz===1||iz===3){const a=edges[ix],b=edges[ix+1],c=edges[iz],d=edges[iz+1];box((a+b)/2,.015,(c+d)/2,b-a,.03,d-c,mats.path);}
+    for(const z of[-205,205])box(0,.015,z,126,.03,10,mats.path);
+  }
   terrain.receiveShadow = true;
 
-  box(0, .08, 0, 12, .16, 12, mats.path, scene, false);
+  if(!rooms)box(0, .08, 0, 12, .16, 12, mats.path, scene, false);
 
   for (let i = 0; i < 8; i++) {
     const a = i * Math.PI / 4;
@@ -172,14 +183,14 @@ window.buildIdeaPark=function(THREE){
     box(0, 1.9, -.65, 4.1, 1.0, .2, mats.wood, group);
     return group;
   }
-  for (let i = 0; i < 34; i++) {
+  for (let i = 0; i < (rooms?0:34); i++) {
     const a = i * Math.PI * 2 / 34;
     const r = i % 2 ? 109 : 92;
     bench(Math.sin(a) * r, Math.cos(a) * r, a + Math.PI);
   }
 
   // Central fountain: the constellation at the park's heart.
-  const fountain = new THREE.Group(); fountain.name='Central Question Fountain'; fountain.position.set(0,0,0); scene.add(fountain);
+  const fountain = new THREE.Group(); fountain.name='Central Question Fountain'; fountain.position.set(edition?.fountain?.x||0,0,edition?.fountain?.z||0); scene.add(fountain);
   cylinder(0, .6, 0, 12.5, 1.2, mats.stone, fountain);
   cylinder(0, 1.26, 0, 11.1, .18, mats.water, fountain, false);
   ring(0, 1.35, 0, 11.7, .68, mats.cream, fountain);
@@ -199,14 +210,14 @@ window.buildIdeaPark=function(THREE){
   dynamicMaterials.push(jetMat);
   const waterDrops = new THREE.Points(jetGeo, jetMat); fountain.add(waterDrops);
   const fountainHalo = ring(0, 1.4, 0, 8, .035, mats.waterLight, fountain);
-  mark(fountain, 'landmark', 'fountain'); landmarks.set('fountain', { x: 0, z: 0 });
-  for (let i = 0; i < 7; i++) {
+  mark(fountain, 'landmark', 'fountain'); landmarks.set('fountain', { x: fountain.position.x, z: fountain.position.z });
+  for (let i = 0; i < (rooms?0:7); i++) {
     const a = i * Math.PI * 2 / 7;
     bench(Math.sin(a) * 23, Math.cos(a) * 23, a);
   }
 
   // House of Ideas: a warm terracotta studio with an open colonnade.
-  const studio = new THREE.Group(); studio.position.set(44, 0, -54); scene.add(studio);
+  const studio = new THREE.Group(); studio.position.set(rooms?0:44, 0, rooms?-205:-54); scene.add(studio);
   cylinder(0, .25, 0, 17.5, .5, mats.path, studio, false);
   box(0, 4.7, 0, 20, 9, 14, mats.cream, studio);
   box(0, 1, 11, 26, 2, 7, mats.stone, studio);
@@ -222,10 +233,10 @@ window.buildIdeaPark=function(THREE){
   plaque('House of Ideas', 'A studio for the unfinished', '#a3674f', 0, 9.2, 14.55, 17, 3.2, 0, studio);
   for (let i = 0; i < 4; i++) box(0, .2 + i * .25, 16 + i * 1.4, 13 - i * .5, .4, 2, mats.stone, studio);
   road(new THREE.Vector3(44, 0, -33), new THREE.Vector3(15, 0, -20), 5);
-  mark(studio, 'landmark', 'studio'); landmarks.set('studio', { x: 44, z: -34 });
+  mark(studio, 'landmark', 'studio'); landmarks.set('studio', { x: studio.position.x, z: studio.position.z+20 });
 
   // The amphitheatre is a welcoming semicircle, scaled for a conversation.
-  const theatre = new THREE.Group(); theatre.position.set(72, 0, 70); theatre.rotation.y = -.6; scene.add(theatre);
+  const theatre = new THREE.Group(); theatre.position.set(rooms?192:72, 0, rooms?0:70); theatre.rotation.y = -.6; scene.add(theatre);
   cylinder(0, .12, 0, 23, .24, mats.path, theatre, false);
   cylinder(0, .6, 0, 9, 1.2, mats.cream, theatre);
   for (let i = 0; i < 5; i++) {
@@ -236,10 +247,10 @@ window.buildIdeaPark=function(THREE){
   }
   box(0, 1.25, -6, 8, .7, 4, mats.wood, theatre);
   plaque('Open questions', 'The amphitheatre', '#896955', 0, 4.1, -8, 10, 2.4, Math.PI, theatre);
-  mark(theatre, 'landmark', 'amphitheater'); landmarks.set('amphitheater', { x: 72, z: 70 });
+  mark(theatre, 'landmark', 'amphitheater'); landmarks.set('amphitheater', { x: theatre.position.x, z: theatre.position.z });
 
   // Observatory: polished brass, open sky and a slowly turning telescope.
-  const observatory = new THREE.Group(); observatory.position.set(-67, 0, -68); scene.add(observatory);
+  const observatory = new THREE.Group(); observatory.position.set(rooms?-192:-67, 0, rooms?-40:-68); scene.add(observatory);
   cylinder(0, .55, 0, 17, 1.1, mats.path, observatory, false);
   cylinder(0, 3.8, 0, 10, 7.1, mats.cream, observatory);
   const dome = mesh(geometry(new THREE.SphereGeometry(10.1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2)), mats.bronze, 0, 7.5, 0, observatory);
@@ -250,7 +261,7 @@ window.buildIdeaPark=function(THREE){
   cylinder(0, .3, 0, 2.6, .7, mats.bronze, telescope);
   const barrelEnd = sphere(-4.8, 7.4, 0, 1.28, 1.28, 1.28, mats.glass, telescope);
   plaque('Observatory', 'Look beyond the familiar', '#7a654b', 0, 6.4, 10.2, 11, 2.6, 0, observatory);
-  mark(observatory, 'landmark', 'observatory'); landmarks.set('observatory', { x: -67, z: -52 });
+  mark(observatory, 'landmark', 'observatory'); landmarks.set('observatory', { x: observatory.position.x, z: observatory.position.z+16 });
 
   // Each discipline has its own small architectural sculpture at the centre.
   function pavilion(group, field, material) {
@@ -293,7 +304,7 @@ window.buildIdeaPark=function(THREE){
       sphere(0, 7.8, 0, 1.5, 1.5, 1.5, mats.cream, group);
     } else if (field === 'algorithms') {
       const pts = [];
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < (rooms?0:7); i++) {
         const a = i * 1.8;
         pts.push(new THREE.Vector3(Math.sin(a) * 4, 2 + i * 1.65, Math.cos(a) * 4));
       }
@@ -373,12 +384,19 @@ window.buildIdeaPark=function(THREE){
     const material = accent(district.color);
     colors.set(district.id, material);
     const garden = new THREE.Group(); garden.position.set(x, 0, z); scene.add(garden);
+    if(rooms){
+      garden.name='Open garden room: '+district.id;
+      box(0,.025,0,84,.05,84,index%2?mats.grassDark:mats.grass,garden,false);
+      for(const side of[-1,1]){box(side*40,.24,0,.6,.48,78,mats.stone,garden);box(0,.24,side*40,78,.48,.6,mats.stone,garden);}
+    }else{
     cylinder(0, .09, 0, 34.5, .18, mats.path, garden, false).visible=window.CITY_CONFIG?.showGroundPaving!==false;
     cylinder(0, .2, 0, 30.3, .12, index % 2 ? mats.grassDark : mats.grass, garden, false);
     ring(0, .26, 0, 31.4, 1.2, mats.path, garden).visible=window.CITY_CONFIG?.showGroundPaving!==false;
     ring(0, .29, 0, 34, .28, mats.cream, garden);
     ring(0, .3, 0, 23, 2.7, mats.path, garden).visible=window.CITY_CONFIG?.showGroundPaving!==false;
+    }
     const pavilionGroup = new THREE.Group(); garden.add(pavilionGroup);
+    if(rooms)pavilionGroup.scale.setScalar(.72);
     pavilion(pavilionGroup, district.id, material);
     mark(pavilionGroup, 'district', district.id);
     const inward = Math.atan2(-x, -z);
@@ -392,8 +410,8 @@ window.buildIdeaPark=function(THREE){
     members.forEach((person, i) => {
       const pa = inward + .32 + i * Math.PI * 2 / Math.max(members.length, 1);
       const r = members.length > 18 ? 25 : 23;
-      const px = Math.sin(pa) * r, pz = Math.cos(pa) * r;
-      const monument = new THREE.Group(); monument.position.set(px, 0, pz); monument.rotation.y = pa; garden.add(monument);
+      const px = rooms?Math.sin(pa)*r*1.22:Math.sin(pa)*r, pz = rooms?Math.cos(pa)*r*1.22:Math.cos(pa)*r;
+      const monument = new THREE.Group(); monument.position.set(px, 0, pz); monument.rotation.y = pa; garden.add(monument);if(rooms)monument.scale.setScalar(.7);
       cylinder(0, .23, 0, 3.5, .46, mats.stone, monument);
       box(0, 1.55, 0, 4.8, 2.25, 4.8, mats.cream, monument);
       box(0, 2.76, 0, 5.2, .24, 5.2, material, monument);
@@ -415,7 +433,7 @@ window.buildIdeaPark=function(THREE){
     sphere(side * 13, 11, 0, 1.2, 1.2, 1.2, mats.terra, entrance);
   }
   box(0, 10.2, 0, 29, 1.1, 2, mats.cream, entrance);
-  for (let i = 0; i < 48; i++) {
+  for (let i = 0; i < (rooms?0:48); i++) {
     const a = i * Math.PI * 2 / 48;
     const r = 146;
     cylinder(Math.sin(a) * r, 2.6, Math.cos(a) * r, .16, 5.2, mats.dark);
@@ -429,6 +447,11 @@ window.buildIdeaPark=function(THREE){
   const treeLocations = [];
   function treeAllowed(x, z) {
     const radius = Math.hypot(x, z);
+    if(rooms){
+      if(radius>234||radius<8||Math.abs(Math.abs(x)-63)<9||Math.abs(Math.abs(z)-63)<9||Math.abs(z)>195&&Math.abs(x)<80)return false;
+      for(const p of districtPositions.values())if(Math.abs(x-p.x)<47&&Math.abs(z-p.z)<47)return false;
+      if(Math.hypot(x+180,z-70)<28||Math.hypot(x-192,z)<28||Math.hypot(x+192,z+40)<25)return false;return true;
+    }
     if (radius < 58 || Math.abs(radius - 100) < 5 || Math.abs(radius - 145) < 7 || Math.abs(radius - 231) < 6) return false;
     for (const d of districtPositions.values()) if (Math.hypot(x - d.x, z - d.z) < 39) return false;
     if (((x + 63) / 37) ** 2 + ((z - 37) / 28) ** 2 < 1.5) return false;
@@ -443,12 +466,30 @@ window.buildIdeaPark=function(THREE){
     }
     return radius < 236;
   }
-  for (let attempt = 0; attempt < 3600 && treeLocations.length < 620; attempt++) {
+  for (let attempt = 0; attempt < 3600 && treeLocations.length < (rooms?300:620); attempt++) {
     const a = random() * Math.PI * 2;
     const r = 44 + Math.sqrt(random()) * 189;
     const x = Math.sin(a) * r, z = Math.cos(a) * r;
     if (treeAllowed(x, z)) treeLocations.push({ x, z, size: 4.3 + random() * 4.6, kind: Math.floor(random() * 3), rot: random() * 7 });
   }
+  if(rooms){
+    // Branching silhouettes and overlapping small crowns replace the original faceted blobs.
+    const stems=new THREE.InstancedMesh(cylinderGeo,mats.trunk,treeLocations.length);
+    const branchGeo=geometry(new THREE.CylinderGeometry(1,1,1,6));
+    const branches=new THREE.InstancedMesh(branchGeo,mats.trunk,treeLocations.length*3);
+    const canopyMaterial=new THREE.MeshLambertMaterial({color:0xffffff});dynamicMaterials.push(canopyMaterial);
+    const canopies=new THREE.InstancedMesh(geometry(new THREE.IcosahedronGeometry(1,1)),canopyMaterial,treeLocations.length*7);canopies.name='Layered woodland canopies';
+    branches.name='Woodland branches';const up=new THREE.Vector3(0,1,0),start=new THREE.Vector3(),end=new THREE.Vector3(),direction=new THREE.Vector3();
+    treeLocations.forEach((t,i)=>{
+      dummy.position.set(t.x,t.size*.4,t.z);dummy.rotation.set(0,t.rot,0);dummy.scale.set(.18,t.size*.8,.18);dummy.updateMatrix();stems.setMatrixAt(i,dummy.matrix);
+      for(let j=0;j<7;j++){
+        const a=t.rot+j*2.39996,r=j===0?0:t.size*(.25+(j%3)*.035),y=t.size*(j===0?1.16:.84+(j%3)*.12);
+        end.set(t.x+Math.sin(a)*r,y,t.z+Math.cos(a)*r);dummy.position.copy(end);dummy.rotation.set(.12*(j%2),a,.08);dummy.scale.set(t.size*(.25+(j%2)*.035),t.size*.3,t.size*.26);dummy.updateMatrix();canopies.setMatrixAt(i*7+j,dummy.matrix);canopies.setColorAt(i*7+j,new THREE.Color(['#81956d','#667f60','#a7ab70','#738b69'][(i+j)%4]));
+        if(j>0&&j<4){start.set(t.x,t.size*.56,t.z);direction.subVectors(end,start);dummy.position.copy(start).add(end).multiplyScalar(.5);dummy.quaternion.setFromUnitVectors(up,direction.clone().normalize());dummy.scale.set(.075,direction.length(),.075);dummy.updateMatrix();branches.setMatrixAt(i*3+j-1,dummy.matrix);}
+      }
+    });
+    scene.add(stems,branches,canopies);treeCount=treeLocations.length;
+  }else{
   const trunks = new THREE.InstancedMesh(cylinderGeo, mats.trunk, treeLocations.length);
   const crownsA = new THREE.InstancedMesh(lowSphereGeo, mats.leaf, treeLocations.length);
   const crownsB = new THREE.InstancedMesh(lowSphereGeo, mats.leafLight, treeLocations.length);
@@ -462,9 +503,10 @@ window.buildIdeaPark=function(THREE){
     dummy.position.set(t.x, t.size * .37, t.z); dummy.scale.set(.31, t.size * .74, .31); dummy.rotation.set(0, 0, 0); dummy.updateMatrix(); trunks.setMatrixAt(i, dummy.matrix);
     dummy.position.set(t.x, t.size, t.z); dummy.scale.set(t.size * .51, t.size * .58, t.size * .49); dummy.rotation.set(.06, t.rot, .04); dummy.updateMatrix(); crownsA.setMatrixAt(i, dummy.matrix);
     dummy.position.set(t.x + t.size * .21, t.size * 1.2, t.z - t.size * .08); dummy.scale.set(t.size * .36, t.size * .39, t.size * .36); dummy.rotation.set(.1, t.rot + .5, 0); dummy.updateMatrix(); crownsB.setMatrixAt(i, dummy.matrix);
-    crownsA.setColorAt(i, new THREE.Color(t.kind === 2 ? '#89986c' : t.kind === 1 ? '#718b62' : '#648464'));
+    crownsA.setColorAt(i, new THREE.Color(rooms?(t.kind===2?'#ad995f':t.kind===1?'#87966b':'#637e67'):t.kind === 2 ? '#89986c' : t.kind === 1 ? '#718b62' : '#648464'));
   });
   scene.add(treeShadows, trunks, crownsA, crownsB); treeCount = treeLocations.length;
+  }
 
   // Beds of small blossoms, instanced rather than individually drawn.
   const flowerLocations = [];
@@ -473,12 +515,12 @@ window.buildIdeaPark=function(THREE){
     for (let i = 0; i < 70; i++) {
       const a = i * 2.39996;
       const r = 32.2 + random() * 1.4;
-      flowerLocations.push({ x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r, c: di % 3 });
+      flowerLocations.push({ x:p.x+(rooms?(i%2?-1:1)*38:Math.sin(a)*r), z:p.z+(rooms?((i*1.31)%76)-38:Math.cos(a)*r), c:di%3 });
     }
   });
   for (let i = 0; i < 180; i++) {
     const a = random() * Math.PI * 2, r = 20 + random() * 3;
-    flowerLocations.push({ x: 42 + Math.sin(a) * r, z: 38 + Math.cos(a) * r, c: i % 3 });
+    flowerLocations.push({ x: groveX + Math.sin(a) * r, z: groveZ + Math.cos(a) * r, c: i % 3 });
   }
   const flowers = new THREE.InstancedMesh(lowSphereGeo, mats.cream, flowerLocations.length);
   flowers.castShadow = false;
@@ -488,11 +530,12 @@ window.buildIdeaPark=function(THREE){
   }); scene.add(flowers);
 
   // The idea grove is the one part of the park that grows with its visitor.
-  cylinder(42, .12, 38, 19, .24, mats.path, scene, false);
-  cylinder(42, .26, 38, 16.8, .12, mats.grassDark, scene, false);
-  ring(42, .3, 38, 17.8, .65, mats.cream);
-  landmarks.set('grove', { x: 42, z: 38 });
-  bench(57, 42, -Math.PI / 2); bench(33, 49, -.5);
+  const grove=new THREE.Group();grove.position.set(groveX-42,0,groveZ-38);scene.add(grove);
+  cylinder(42, .12, 38, 19, .24, mats.path, grove, false);
+  cylinder(42, .26, 38, 16.8, .12, mats.grassDark, grove, false);
+  ring(42, .3, 38, 17.8, .65, mats.cream, grove);
+  landmarks.set('grove', { x: groveX, z: groveZ });
+  bench(57, 42, -Math.PI / 2,grove); bench(33, 49, -.5,grove);
 
 
   function addSeed(seed) {
@@ -500,8 +543,8 @@ window.buildIdeaPark=function(THREE){
     const i = seedPositions.size;
     const a = i * 2.39996;
     const r = Math.min(13.5, 4 + Math.sqrt(i) * 2.4);
-    const x = Number.isFinite(+seed.x) ? +seed.x : 42 + Math.sin(a) * r;
-    const z = Number.isFinite(+seed.z) ? +seed.z : 38 + Math.cos(a) * r;
+    const x = Number.isFinite(+seed.x) ? +seed.x : groveX + Math.sin(a) * r;
+    const z = Number.isFinite(+seed.z) ? +seed.z : groveZ + Math.cos(a) * r;
     const group = new THREE.Group(); group.position.set(x, 0, z); seedGroup.add(group);
     const bloom = accent(seed.color || ['#d29b87', '#c4ba80', '#b79cbb', '#dfa988'][i % 4]);
     cylinder(0, .17, 0, 1.9, .34, mats.cream, group);
@@ -591,5 +634,5 @@ window.buildIdeaPark=function(THREE){
  // Ideas Park is freely walkable; scenery and selection remain visible.
  function canStand(){return true;}
  function update(t,reducedMotion){if(reducedMotion)return;waterDrops.rotation.y=t*.11;waterDrops.position.y=Math.sin(t*2)*.1;fountainHalo.rotation.z=t*.15;pulses.forEach(p=>p.object.scale.setScalar(1+((t*.12+p.offset*.17)%1)*.7));telescope.rotation.y=Math.sin(t*.045)*.35;}
- return{group:scene,targets:clickable,districtPositions,personPositions,seedPositions,landmarks,addSeed,removeSeed,updateSeed,setSeeds,canStand,update,stats:{people:people.length,districts:districts.length,trees:treeCount}};
+ return{group:scene,targets:clickable,districtPositions,personPositions,seedPositions,landmarks,addSeed,removeSeed,updateSeed,setSeeds,canStand,update,stats:{edition:rooms?edition.id:'atlas',people:people.length,districts:districts.length,trees:treeCount}};
 };
