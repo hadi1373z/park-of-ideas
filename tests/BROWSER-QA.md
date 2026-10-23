@@ -23,3 +23,15 @@ Only synthetic local notes were entered. No user notes were copied or uploaded. 
 
 - On the local preview, a synthetic second-edition question survives reload; following Original park shows its different synthetic test idea instead. Neither is uploaded with the source.
 - Phone-sized view checked at 390 × 844; all three opening invitations and the park controls remain available.
+
+## The Listening Grove — 2026-10-23
+
+- Independent rolling woodland scene and lantern trail render without the nine-garden builder.
+- Each of the five clearings opens from its labelled destination button.
+- Touch the water shows moving ripple rings; balancing controls visibly tilt the beam; the firefly pattern controls change the lights.
+- Sound toggles on/off explicitly; harp key C changes the feedback while sound is enabled. No audio plays on initial load.
+- Paper Meadow releases the cranes. Unit tests verify the entire flight and return and repeated-release handling.
+- A synthetic field note survives page reload; JSON export contains that note. All such browser tests use the isolated local origin.
+- Mobile opening and walking controls checked at 390 × 844.
+
+These are functional checks, not a formal manual accessibility or hardware-gamepad audit.

@@ -2,12 +2,14 @@
 
 An independent, browser-based 3D garden of mathematics and creative questions. Extracted from [City of Ideas](https://github.com/hadi1373z/city-of-ideas), with its own renderer, controls, build, tests, and GitHub Pages deployment. It runs without loading the city or connecting to its tools.
 
-## Two park editions
+## Three park experiences
 
 - [Original park](https://hadi1373z.github.io/park-of-ideas/): nine circular gardens around the central fountain.
 - [The Question Garden](https://hadi1373z.github.io/park-of-ideas/question-garden.html): nine open garden rooms, joined gravel promenades, lower sculpture displays, branching trees with layered canopies, new landmark locations and a green-and-brass interface. Its three opening invitations lead to geometry, logic, or a personal question.
 
-The editions share the catalogue, renderer, missions, reading tools and origami models. Their personal idea groves use separate browser storage keys; export/import can transfer ideas between them. The Atlas reading shelf remains shared within the same origin.
+- [The Listening Grove](https://hadi1373z.github.io/park-of-ideas/listening-grove.html): a new rolling woodland at dusk, with a winding lantern trail and five playable clearings: water ripples, a synthesized harp, a balancing stone, firefly patterns, and paper cranes that fly and return. It has its own renderer, controls, and local field notes.
+
+The first two editions share the catalogue, renderer, missions, reading tools and origami models. Their personal idea groves use separate browser storage keys; export/import can transfer ideas between them. The Atlas reading shelf remains shared within the same origin.
 
 ## Explore
 
@@ -52,3 +54,11 @@ No account or server is required. Grove notes and folding progress stay in this 
 Pushes to `main` run checks, build `_site`, publish to GitHub Pages, and verify the served version and asset hashes. `_site` is generated and excluded from Git.
 
 See [PROVENANCE.md](PROVENANCE.md) for extraction details and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for bundled dependencies. This is an educational catalogue snapshot; publication does not independently re-verify every historical claim.
+
+## The Listening Grove
+
+The third park is built independently in `src/listening-grove/`, using shared Three.js and folded-paper crane geometry. It uses no city geometry, nine-garden catalogue layout, embedded reader, or external runtime services. Open `listening-grove.html` after building.
+
+Choose Clearings to visit any instrument, or follow the trail. Field notes are stored under `listening-grove:field-notes:v1` and can be exported as JSON. They remain separate from the earlier groves. Sound is off on every fresh page load; Sound on enables quiet synthesized harp notes. No microphone or audio service is used. This new experience is currently in English. Reduced motion keeps the cranes perched and the fireflies still while visual controls remain usable.
+
+Its balance and fireflies are authored visual models rather than physical or biological simulations.

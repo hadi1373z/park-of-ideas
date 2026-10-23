@@ -1,0 +1,18 @@
+export const CLEARINGS=Object.freeze([
+ {id:'echo',name:'The Ripple Well',word:'Listen',x:29,z:40,approach:{x:27,z:53},color:'#dcb87c',prompt:'What keeps moving after you become still?',description:'Touch the water. Watch a small gesture travel outwards.'},
+ {id:'harp',name:'The Wind Harp',word:'Compose',x:49,z:-4,approach:{x:39,z:7},color:'#c8b8d8',prompt:'When does a repeated sound become a rhythm?',description:'Pluck five strings. Leave enough silence to hear the spaces between them.'},
+ {id:'balance',name:'The Balancing Stone',word:'Test',x:10,z:-40,approach:{x:10,z:-28},color:'#cca784',prompt:'What did you have to move to find a balance?',description:'Move one stone across the beam. Notice how a small change tilts the whole.'},
+ {id:'lights',name:'The Firefly Clearing',word:'Notice',x:-39,z:-22,approach:{x:-27,z:-14},color:'#b6cf9b',prompt:'Did you discover the pattern, or ask for it?',description:'Let the lights drift, then gather them. Compare two ways of seeing the same lights.'},
+ {id:'paper',name:'The Paper Meadow',word:'Release',x:-39,z:31,approach:{x:-27,z:41},color:'#e0cfa7',prompt:'What changes when you let something go?',description:'Release six folded-paper cranes, then watch them return to their resting places.'}
+].map(Object.freeze));
+export const byId=id=>CLEARINGS.find(c=>c.id===id);
+const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
+function baseHeight(x,z){return Math.sin(x*.031)*1.7+Math.cos(z*.036)*1.25+4*Math.exp(-((x+83)**2+(z+34)**2)/1500)+5*Math.exp(-((x-84)**2+(z+67)**2)/1300);}
+export function groundHeight(x,z){let y=baseHeight(x,z);for(const c of CLEARINGS){const r=Math.hypot(x-c.x,z-c.z),w=1-smooth((r-10)/8);y=y*(1-w)+baseHeight(c.x,c.z)*w;}return y;}
+export function safePosition(x,z){if(!Number.isFinite(x)||!Number.isFinite(z))return null;const r=Math.hypot(x,z),k=r>108?108/r:1;return{x:x*k,z:z*k};}
+export function balanceAngle(offset){return Math.max(-2,Math.min(2,Number(offset)||0))*.14;}
+export function paperPose(index,time,launchedAt){const a=index*Math.PI/3,home={x:Math.sin(a)*5,y:1.5,z:Math.cos(a)*5};if(launchedAt===null||time<launchedAt||time-launchedAt>=24)return{...home,yaw:a-Math.PI/2,flying:false};const t=(time-launchedAt)/24,lift=Math.sin(Math.PI*t),b=a+t*Math.PI*4,r=5+lift*11;return{x:Math.sin(b)*r,y:home.y+lift*(5+index*.3),z:Math.cos(b)*r,yaw:b-Math.PI/2,flying:true};}
+export function lightPose(index,time,gathered){const a=index*2.39996;if(gathered)return{x:Math.cos(a)*Math.sqrt(index)*.67,y:3+index*.075,z:Math.sin(a)*Math.sqrt(index)*.67};return{x:Math.sin(a+time*.16)*7,y:2.2+(Math.sin(index+time*.42)+1)*2.1,z:Math.cos(a*.83+time*.11)*7};}
+export function createFieldNotes(storage){const key='listening-grove:field-notes:v1';let state={version:1,notes:{},met:[]},saved=!!storage;try{const v=JSON.parse(storage?.getItem(key)||'null');if(v?.version===1){for(const c of CLEARINGS)if(typeof v.notes?.[c.id]==='string')state.notes[c.id]=v.notes[c.id].slice(0,2400);state.met=Array.isArray(v.met)?[...new Set(v.met.filter(id=>byId(id)))]:[];}}catch{saved=false;}function persist(){try{if(!storage)throw Error();storage.setItem(key,JSON.stringify(state));saved=true;}catch{saved=false;}return saved;}return{get state(){return structuredClone(state);},get saved(){return saved;},visit(id){if(!byId(id))return false;if(!state.met.includes(id))state.met.push(id);return persist();},write(id,text){if(!byId(id)||typeof text!=='string')return false;state.notes[id]=text.slice(0,2400);return persist();}};}
+
+export function launchCranes(state,time){if(!Number.isFinite(time)||time<0)return false;if(state.launchedAt!==null&&time-state.launchedAt<24)return false;state.launchedAt=time;return true;}
