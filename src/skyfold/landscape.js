@@ -80,7 +80,7 @@ export function buildSkyfold(T,journey){
   left.rotation.y=radians(la);right.rotation.y=-radians(ra);passage.visible=journey.data.solved.includes('pavilion');
   tray.rotation.x=-radians(tilt);const p=boatPose(state.boat);boat.group.position.set(p.x,p.y+.12,p.z);boat.group.rotation.y=p.yaw;boat.group.rotation.z=reduced?0:Math.sin(time*1.8)*.025;
   opened+=((journey.data.orchard?1:0)-opened)*(reduced?1:1-Math.exp(-dt*.85));for(const leaf of leaves)leaf.rotation.x=-(1-opened)*Math.PI*.46;secret.scale.setScalar(Math.max(.001,opened));
-  flyers.forEach((bird,i)=>{const t=reduced?i*1.3:time*.095+i*1.25;bird.group.position.set(Math.cos(t)*(34+i*3),22+Math.sin(t*1.6+i)*4,Math.sin(t)*40);bird.group.rotation.y=-t;bird.animate(time+i,{reducedMotion:reduced});});
+  flyers.forEach((bird,i)=>{const t=reduced?i*1.3:time*.095+i*1.25;bird.group.position.set(Math.cos(t)*(34+i*3),22+Math.sin(t*1.6+i)*4,Math.sin(t)*40);bird.group.rotation.set(0,Math.atan2((34+i*3)*Math.sin(t),-40*Math.cos(t)),reduced?0:Math.sin(t)*.03);bird.animate(time+i,{reducedMotion:reduced});});
   butterflies.forEach((b,i)=>{b.group.visible=opened>.8;const t=reduced?i:time*.5+i*1.57;b.group.position.set(Math.cos(t)*13,4+Math.sin(t*1.7)*2,Math.sin(t)*13);b.group.rotation.y=-t;b.animate(time+i,{reducedMotion:reduced});});
  }
  update(0,1,true);
