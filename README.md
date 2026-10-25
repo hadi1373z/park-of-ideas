@@ -2,12 +2,14 @@
 
 An independent, browser-based 3D garden of mathematics and creative questions. Extracted from [City of Ideas](https://github.com/hadi1373z/city-of-ideas), with its own renderer, controls, build, tests, and GitHub Pages deployment. It runs without loading the city or connecting to its tools.
 
-## Three park experiences
+## Four park experiences
 
 - [Original park](https://hadi1373z.github.io/park-of-ideas/): nine circular gardens around the central fountain.
 - [The Question Garden](https://hadi1373z.github.io/park-of-ideas/question-garden.html): nine open garden rooms, joined gravel promenades, lower sculpture displays, branching trees with layered canopies, new landmark locations and a green-and-brass interface. Its three opening invitations lead to geometry, logic, or a personal question.
 
 - [The Listening Grove](https://hadi1373z.github.io/park-of-ideas/listening-grove.html): a new rolling woodland at dusk, with a winding lantern trail and five playable clearings: water ripples, a synthesized harp, a balancing stone, firefly patterns, and paper cranes that fly and return. It has its own renderer, controls, and local field notes.
+
+- [Skyfold Park](https://hadi1373z.github.io/park-of-ideas/skyfold.html): a folded-paper landscape above the clouds. Compress an accordion canyon, turn two pavilion wings into a doorway, and tilt a blue paper river to guide a boat. The three puzzles unlock a gatefold orchard with twelve paper trees and a hidden pavilion. Progress changes the visible landscape and stays saved between visits.
 
 The first two editions share the catalogue, renderer, missions, reading tools and origami models. Their personal idea groves use separate browser storage keys; export/import can transfer ideas between them. The Atlas reading shelf remains shared within the same origin.
 
@@ -62,3 +64,13 @@ The third park is built independently in `src/listening-grove/`, using shared Th
 Choose Clearings to visit any instrument, or follow the trail. Field notes are stored under `listening-grove:field-notes:v1` and can be exported as JSON. They remain separate from the earlier groves. Sound is off on every fresh page load; Sound on enables quiet synthesized harp notes. No microphone or audio service is used. This new experience is currently in English. Reduced motion keeps the cranes perched and the fireflies still while visual controls remain usable.
 
 Its balance and fireflies are authored visual models rather than physical or biological simulations.
+
+## Skyfold Park
+
+The fourth park has its own renderer and interface in `src/skyfold/`. `journey.js` owns the ordered puzzle state, save validation, boat flow, and safe walking boundary. `landscape.js` builds a continuous paper sheet, attached accordion hinges, turning wings, tilting river and unfolding orchard. `experience.js` manages camera inspection, walking, picking and keyboard/touch/gamepad input. `app.js` connects those mechanics to accessible controls and the local reflection journal. Existing folded-paper crane, butterfly and boat models are reused; there are no attached animal bodies or decorations.
+
+Start with Make the first fold, then follow the three puzzles. Compress the canyon until the red marks meet; give both pavilion wings a quarter turn; tip the river Forward and release the boat. Level or reverse the river to pause or bring it back. Each completed fold stays in its new shape. Unfold the orchard after the boat arrives. The journey menu revisits unlocked places; Walk and Overview allow free exploration. There is no score, timer, audio or external service. This version is currently in English.
+
+Progress and a reflection are stored under `skyfold:journey:v1`, separate from all other parks. Your folds can export a JSON copy. Reset this journey is an explicit action inside Help; it resets puzzles while preserving the reflection. If storage is unavailable, the visit continues in memory and the interface reports that export is needed. Reduced motion disables ambient flights and animating camera transitions; user-controlled folds and boat movement still work.
+
+Keyboard users can Tab to the fold sliders and adjust them with arrow keys. On a standard gamepad, D-pad moves between controls, the left stick adjusts a focused slider, A activates buttons, and B closes a panel. The sticks also support walking and looking. Controller support uses the existing browser gamepad mapping; physical hardware has not been tested in this release. Paper folding and boat flow are authored geometric mechanisms, not a rigid-origami or fluid simulator.
